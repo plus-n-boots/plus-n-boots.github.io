@@ -1,0 +1,22 @@
+{
+  "name": "plus-n-boots.github.io",
+  "version": "1.0.0",
+  "description": "plus-n-boots website",
+  "main": "index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/plus-n-boots/plus-n-boots.github.io.git"
+  },
+  "keywords": [
+    "plus-n-boots"
+  ],
+  "author": "Chris Wheatley <chiswheatley87@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/plus-n-boots/plus-n-boots.github.io/issues"
+  },
+  "homepage": "https://github.com/plus-n-boots/plus-n-boots.github.io"
+}
