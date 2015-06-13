@@ -7,7 +7,7 @@ System.config({
     ]
   },
   "paths": {
-    "*": "*.js",
+    "*": "src/*.js",
     "github:*": "jspm_packages/github/*.js",
     "npm:*": "jspm_packages/npm/*.js"
   }
@@ -31,4 +31,3 @@ System.config({
     }
   }
 });
-
