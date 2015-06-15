@@ -91,13 +91,7 @@ System.config({
       "invariant": "npm:invariant@2.1.0",
       "keymirror": "npm:keymirror@0.1.1",
       "qs": "npm:qs@2.4.1",
-      "react": "npm:react@0.13.3",
       "warning": "npm:warning@1.0.2"
-    },
-    "npm:react@0.13.3": {
-      "buffer": "github:jspm/nodelibs-buffer@0.1.0",
-      "envify": "npm:envify@3.4.0",
-      "process": "github:jspm/nodelibs-process@0.1.1"
     },
     "npm:react@0.14.0-alpha3": {
       "buffer": "github:jspm/nodelibs-buffer@0.1.0",
@@ -143,4 +137,3 @@ System.config({
     }
   }
 });
-
