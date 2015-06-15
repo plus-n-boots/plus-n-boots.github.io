@@ -14,14 +14,14 @@ gulp.task('js', function () {
   return gulp.src([paths.jsx, paths.js])
     .pipe(plumber())
     .pipe(babel())
-    .pipe(gulp.dest('dist'))
+    .pipe(gulp.dest('build'))
 })
 
 gulp.task('css', function () {
   return gulp.src(paths.css)
     .pipe(plumber())
     .pipe(myth())
-    .pipe(gulp.dest('dist'))
+    .pipe(gulp.dest('build'))
 })
 
 gulp.task('watch', function() {
