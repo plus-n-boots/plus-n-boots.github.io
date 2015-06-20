@@ -22,8 +22,11 @@
   "jspm": {
     "directories": {},
     "dependencies": {
+      "fetch": "npm:whatwg-fetch@^0.9.0",
       "react": "npm:react@^0.14.0-alpha3",
-      "react-router": "npm:react-router@^1.0.0-beta1"
+      "react-router": "npm:react-router@^1.0.0-beta1",
+      "redux": "npm:redux@^0.12.0",
+      "url": "github:jspm/nodelibs-url@^0.1.0"
     },
     "devDependencies": {
       "babel": "npm:babel-core@^5.1.13",

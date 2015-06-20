@@ -18,8 +18,14 @@ System.config({
     "babel": "npm:babel-core@5.5.4",
     "babel-runtime": "npm:babel-runtime@5.5.4",
     "core-js": "npm:core-js@0.9.14",
+    "fetch": "npm:whatwg-fetch@0.9.0",
     "react": "npm:react@0.14.0-alpha3",
     "react-router": "npm:react-router@1.0.0-beta1",
+    "redux": "npm:redux@0.12.0",
+    "url": "github:jspm/nodelibs-url@0.1.0",
+    "github:jspm/nodelibs-assert@0.1.0": {
+      "assert": "npm:assert@1.3.0"
+    },
     "github:jspm/nodelibs-buffer@0.1.0": {
       "buffer": "npm:buffer@3.2.2"
     },
@@ -35,6 +41,9 @@ System.config({
     "github:jspm/nodelibs-stream@0.1.0": {
       "stream-browserify": "npm:stream-browserify@1.0.0"
     },
+    "github:jspm/nodelibs-url@0.1.0": {
+      "url": "npm:url@0.10.3"
+    },
     "github:jspm/nodelibs-util@0.1.0": {
       "util": "npm:util@0.10.3"
     },
@@ -43,6 +52,9 @@ System.config({
       "module": "github:jspm/nodelibs-module@0.1.0",
       "path": "github:jspm/nodelibs-path@0.1.0",
       "process": "github:jspm/nodelibs-process@0.1.1"
+    },
+    "npm:assert@1.3.0": {
+      "util": "npm:util@0.10.3"
     },
     "npm:babel-runtime@5.5.4": {
       "process": "github:jspm/nodelibs-process@0.1.1"
@@ -87,6 +99,9 @@ System.config({
     "npm:path-browserify@0.0.0": {
       "process": "github:jspm/nodelibs-process@0.1.1"
     },
+    "npm:punycode@1.3.2": {
+      "process": "github:jspm/nodelibs-process@0.1.1"
+    },
     "npm:react-router@1.0.0-beta1": {
       "invariant": "npm:invariant@2.1.0",
       "keymirror": "npm:keymirror@0.1.1",
@@ -110,6 +125,10 @@ System.config({
       "string_decoder": "npm:string_decoder@0.10.31",
       "util": "github:jspm/nodelibs-util@0.1.0"
     },
+    "npm:redux@0.12.0": {
+      "invariant": "npm:invariant@2.1.0",
+      "process": "github:jspm/nodelibs-process@0.1.1"
+    },
     "npm:source-map@0.1.31": {
       "amdefine": "npm:amdefine@0.1.1",
       "fs": "github:jspm/nodelibs-fs@0.1.2",
@@ -128,6 +147,12 @@ System.config({
       "process": "github:jspm/nodelibs-process@0.1.1",
       "stream": "github:jspm/nodelibs-stream@0.1.0"
     },
+    "npm:url@0.10.3": {
+      "assert": "github:jspm/nodelibs-assert@0.1.0",
+      "punycode": "npm:punycode@1.3.2",
+      "querystring": "npm:querystring@0.2.0",
+      "util": "github:jspm/nodelibs-util@0.1.0"
+    },
     "npm:util@0.10.3": {
       "inherits": "npm:inherits@2.0.1",
       "process": "github:jspm/nodelibs-process@0.1.1"
@@ -137,3 +162,4 @@ System.config({
     }
   }
 });
+
