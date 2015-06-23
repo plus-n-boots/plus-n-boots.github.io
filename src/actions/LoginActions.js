@@ -1,4 +1,4 @@
-import { USER_LOGGED_IN } from '../constants/ActionTypes';
+import { USER_LOGGED_IN } from '../constants/ActionTypes'
 
 export function login () {
   return {
