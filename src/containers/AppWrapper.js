@@ -9,7 +9,7 @@ import * as stores from '../stores/index'
 const redux = createRedux(stores)
 
 export default class AppWrapper {
-  render() {
+  render () {
     return (
       <Provider redux={redux}>
         {() =>

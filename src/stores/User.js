@@ -1,15 +1,17 @@
 import * as constants from '../constants/ActionTypes'
 
-export default function user(state = {username: null}, action) {
+export default function user (state = {username: null}, action) {
   switch (action.type) {
   case constants.USER_LOGGED_IN:
-    return state = {
+    state = {
       username: action.username
     }
+    return state
   case constants.USER_LOGGED_OUT:
-    return state = {
+    state = {
       username: null
     }
+    return state
   default:
     return state
   }

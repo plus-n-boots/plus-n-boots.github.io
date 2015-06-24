@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react'
 
 export default class Login {
 
-  render() {
+  render () {
     const { login, logout, user } = this.props
     const username = user.username ? user.username : ``
     const loggedInMsg = username ? `Log Out` : `Log In`

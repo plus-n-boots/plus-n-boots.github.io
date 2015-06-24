@@ -9,7 +9,7 @@ import * as LoginActions from '../actions/LoginActions'
 }))
 
 export default class LoginApp {
-  render() {
+  render () {
     const { user, dispatch } = this.props
     return (
       <Login user={user}
