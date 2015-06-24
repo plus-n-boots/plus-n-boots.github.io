@@ -5,14 +5,14 @@ import Login from '../components/Login'
 import * as LoginActions from '../actions/LoginActions'
 
 @connect(state => ({
-  loggedIn: state.loggedIn
+  user: state.user
 }))
 
 export default class LoginApp {
   render() {
-    const { loggedIn, dispatch } = this.props
+    const { user, dispatch } = this.props
     return (
-      <Login loggedIn={loggedIn}
+      <Login user={user}
                {...bindActionCreators(LoginActions, dispatch)} />
     )
   }
