@@ -1,3 +1,4 @@
+import 'babel-runtime/regenerator/runtime'
 import React from 'react'
 import AppWrapper from './containers/AppWrapper'
 
