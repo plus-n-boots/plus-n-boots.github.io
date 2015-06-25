@@ -11,7 +11,7 @@ const AUTH_URI = `http://localhost:9999/authenticate/`
 
 async function getCode () {
   return await new Promise((resolve, reject) => {
-    window.open(GITHUB_LOGIN, '_blank', 'menubar=0')
+    window.open(GITHUB_LOGIN, '_blank', 'width=1200,height=600,menubar=0')
     window.onmessage = oauth => {
       if (oauth.data) {
         resolve(oauth.data)
