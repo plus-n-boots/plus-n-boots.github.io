@@ -1,7 +1,12 @@
 import React, { PropTypes } from 'react'
 import Repo from './Repo'
 
-export default class Repos {
+export default class {
+  static displayName = 'Repos'
+
+  static PropTypes = {
+    repos: PropTypes.array
+  }
 
   render () {
     const { repos } = this.props

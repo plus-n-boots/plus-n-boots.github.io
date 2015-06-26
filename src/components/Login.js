@@ -1,7 +1,14 @@
 import React, { PropTypes } from 'react'
 import Repos from './Repos'
 
-export default class Login {
+export default class {
+  static displayName = 'Login'
+
+  static PropTypes = {
+    login: PropTypes.func.isRequired,
+    logout: PropTypes.func.isRequired,
+    user: PropTypes.object
+  }
 
   render () {
     const { login, logout, user } = this.props
