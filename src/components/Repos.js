@@ -5,13 +5,12 @@ export default class Repos {
 
   render () {
     const { repos } = this.props
-    const userRepos = this.props.repos
 
     return (
       <section>
         <ul>
-          {userRepos.map(repo =>
-            <Repo repo={repo.name} />
+          {this.props.repos.map(repo =>
+            <Repo key={repo.id} repo={repo} />
           )}
         </ul>
       </section>
