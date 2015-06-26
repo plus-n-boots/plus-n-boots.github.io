@@ -1,5 +1,5 @@
 import 'fetch'
-import * as constants from '../constants/ActionTypes'
+import * as types from '../constants/ActionTypes'
 
 const GITHUB_OAUTH = `https://github.com/login/oauth/authorize`
 const GITHUB_API = `https://api.github.com/`
@@ -29,21 +29,34 @@ async function getAuth (code) {
   )
 }
 
-async function getUsername (auth) {
+async function getUserDetails (auth) {
   return fetch(`${GITHUB_API}user?access_token=${auth.token}`).then(
     data => data.json()
-  ).then(
-    response => response.login
+  ).then((response) => {
+    return response
+  }
   )
+}
+
+async function getRepos (reposApi) {
+  return fetch(`${reposApi}`).then((data) => {
+    return data.json()
+  }).then((data) => {
+    return data.filter(repo => {
+      return !repo.fork
+    })
+  })
 }
 
 async function processLogin () {
   const code = await getCode()
   const auth = await getAuth(code)
-  const username = await getUsername(auth)
+  const details = await getUserDetails(auth)
+  const repos = await getRepos(details.repos_url)
   return {
-    type: constants.USER_LOGGED_IN,
-    username: username
+    type: types.USER_LOGGED_IN,
+    details,
+    repos
   }
 }
 
@@ -59,6 +72,6 @@ export function login () {
 
 export function logout () {
   return {
-    type: constants.USER_LOGGED_OUT
+    type: types.USER_LOGGED_OUT
   }
 }
