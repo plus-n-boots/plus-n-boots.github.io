@@ -13,7 +13,6 @@ export default class {
 
     return (
       <section>
-        {this.renderAllCheckbox(this.props.repos)}
         <ul>
           {this.props.repos.map(repo =>
             <Repo key={repo.id} repo={repo} />
@@ -21,13 +20,5 @@ export default class {
         </ul>
       </section>
     )
-  }
-
-  renderAllCheckbox(repos) {
-    if (repos.length) {
-      return (
-        <span>activate all <input type='checkbox' /></span>
-      )
-    }
   }
 }
