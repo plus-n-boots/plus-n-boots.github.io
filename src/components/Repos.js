@@ -18,7 +18,16 @@ export default class {
             <Repo key={repo.id} repo={repo} />
           )}
         </ul>
+        {this.renderSubmit(this.props.repos)}
       </section>
     )
+  }
+
+  renderSubmit(repos) {
+    if (repos.length) {
+      return (
+        <button>activate</button>
+      )
+    }
   }
 }
