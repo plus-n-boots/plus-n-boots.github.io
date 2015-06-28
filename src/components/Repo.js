@@ -4,14 +4,15 @@ export default class {
   static displayName = 'Repo'
 
   static PropTypes = {
-    repo: PropTypes.obj
+    actions: PropTypes.object,
+    repo: PropTypes.object.isRequired
   }
 
   render () {
-    const { repo } = this.props
+    const { actions, repo } = this.props
 
     return (
-      <li>{this.props.repo.name} <input type='checkbox' /></li>
+      <li><input type='checkbox' onChange={() => {}} /> {this.props.repo.name}</li>
     )
   }
 

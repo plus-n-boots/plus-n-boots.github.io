@@ -5,17 +5,17 @@ export default class {
   static displayName = 'Repos'
 
   static PropTypes = {
-    repos: PropTypes.array
+    actions: PropTypes.object,
+    repos: PropTypes.array.isRequired
   }
 
   render () {
-    const { repos } = this.props
-
+    const { actions, repos } = this.props
     return (
       <section>
         <ul>
           {this.props.repos.map(repo =>
-            <Repo key={repo.id} repo={repo} />
+            <Repo key={repo.id} repo={repo} actions={actions} />
           )}
         </ul>
         {this.renderSubmit(this.props.repos)}
