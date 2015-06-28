@@ -1,19 +1,24 @@
 import React from 'react'
 import { bindActionCreators } from 'redux'
-import { connect } from 'redux/react'
+import { Connector } from 'redux/react'
 import Login from '../components/Login'
 import * as LoginActions from '../actions/LoginActions'
 
-@connect(state => ({
-  user: state.user
-}))
-
 export default class LoginApp {
-  render () {
-    const { user, dispatch } = this.props
+  render() {
     return (
-      <Login user={user}
-               {...bindActionCreators(LoginActions, dispatch)} />
+      <Connector select={state => ({ user: state.user })}>
+        {this.renderChild}
+      </Connector>
+    )
+  }
+
+  renderChild({ user, dispatch }) {
+    const actions = bindActionCreators(LoginActions, dispatch)
+    return (
+      <div>
+        <Login user={user} actions={actions} />
+      </div>
     )
   }
 }
