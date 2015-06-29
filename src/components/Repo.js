@@ -12,7 +12,7 @@ export default class {
     const { actions, repo } = this.props
 
     return (
-      <li><input type='checkbox' onChange={() => {}} /> {this.props.repo.name}</li>
+      <li><input type='checkbox' /> {repo.name}</li>
     )
   }
 

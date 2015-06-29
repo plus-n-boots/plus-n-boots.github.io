@@ -11,9 +11,8 @@ export default class {
 
   render () {
     const { actions, user } = this.props
-    const loggedInUser = this.props.user
-    const username = loggedInUser.details ? loggedInUser.details.login : ``
-    const repos = loggedInUser ? loggedInUser.repos : null
+    const username = user.details ? user.details.login : ``
+    const repos = user ? user.repos : null
     const loggedInMsg = username ? `Log Out` : `Log In`
     const action = username ? actions.logout : actions.login
     return (
@@ -24,5 +23,4 @@ export default class {
       </section>
     )
   }
-
 }

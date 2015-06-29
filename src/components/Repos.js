@@ -14,11 +14,11 @@ export default class {
     return (
       <section>
         <ul>
-          {this.props.repos.map(repo =>
+          {repos.map(repo =>
             <Repo key={repo.id} repo={repo} actions={actions} />
           )}
         </ul>
-        {this.renderSubmit(this.props.repos)}
+        {this.renderSubmit(repos)}
       </section>
     )
   }
