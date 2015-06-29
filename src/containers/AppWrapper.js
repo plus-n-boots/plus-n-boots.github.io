@@ -21,3 +21,5 @@ export default class AppWrapper {
     )
   }
 }
+
+export const __hotReload = true

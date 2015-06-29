@@ -15,5 +15,6 @@ export default class {
       <li><input type='checkbox' /> {repo.name}</li>
     )
   }
-
 }
+
+export const __hotReload = true
