@@ -13,10 +13,8 @@ async function getCode () {
   return await new Promise((resolve, reject) => {
     window.open(GITHUB_LOGIN, '_blank', 'width=1200,height=600,menubar=0')
     window.onmessage = oauth => {
-      if (oauth.data) {
+      if (oauth.data.length) {
         resolve(oauth.data)
-      } else {
-        reject('no code returned from github')
       }
     }
   })
