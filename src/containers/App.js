@@ -22,5 +22,3 @@ export default class LoginApp {
     )
   }
 }
-
-export const __hotReload = true

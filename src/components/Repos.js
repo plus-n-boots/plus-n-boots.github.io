@@ -31,5 +31,3 @@ export default class {
     }
   }
 }
-
-export const __hotReload = true

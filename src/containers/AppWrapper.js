@@ -13,7 +13,7 @@ export default class AppWrapper {
     return (
       <Provider redux={redux}>
         {() =>
-          <Router history={BrowserHistory}>
+          <Router history={new BrowserHistory}>
             <Route path='/' component={App} />
           </Router>
         }
@@ -21,5 +21,3 @@ export default class AppWrapper {
     )
   }
 }
-
-export const __hotReload = true

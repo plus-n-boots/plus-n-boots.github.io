@@ -6,5 +6,3 @@ React.render(
   <AppWrapper />,
   document.querySelector('main')
 )
-
-export const __hotReload = true
