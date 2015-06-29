@@ -23,7 +23,6 @@
     "directories": {},
     "dependencies": {
       "fetch": "npm:whatwg-fetch@^0.9.0",
-      "jsx": "npm:jspm-loader-jsx@^0.0.1",
       "react": "npm:react@^0.14.0-alpha3",
       "react-router": "npm:react-router@^1.0.0-beta1",
       "redux": "npm:redux@^0.12.0",
