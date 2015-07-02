@@ -16,6 +16,8 @@ export default function user (state = initialState, action) {
   case constants.USER_LOGGED_OUT:
     state = initialState
     return state
+  case constants.HOOK_ADDED:
+    return state
   default:
     return state
   }

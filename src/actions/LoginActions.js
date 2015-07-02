@@ -6,8 +6,10 @@ const GITHUB_API = `https://api.github.com/`
 const CLIENT_ID = `d07ba9157a9cd18b5f0d`
 const REDIRECT_URI = `http://localhost:8080/logged-in.html`
 const STATE = `cbd8c10443696bbf430e2dc97a64951d`
-const GITHUB_LOGIN = `${GITHUB_OAUTH}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&state=${STATE}`
+const GITHUB_LOGIN = `${GITHUB_OAUTH}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&state=${STATE}&scope=repo,write:repo_hook`
 const AUTH_URI = `http://localhost:9999/authenticate/`
+let accessToken
+let username
 
 async function getCode () {
   return await new Promise((resolve, reject) => {
@@ -28,9 +30,11 @@ async function getAuth (code) {
 }
 
 async function getUserDetails (auth) {
-  return fetch(`${GITHUB_API}user?access_token=${auth.token}`).then(
+  accessToken = auth.token
+  return fetch(`${GITHUB_API}user?access_token=${accessToken}`).then(
     data => data.json()
   ).then((response) => {
+    username = response.login
     return response
   }
   )
@@ -46,6 +50,33 @@ async function getRepos (reposApi) {
   })
 }
 
+async function requestHook (repoName) {
+  const config = {
+    name: 'web',
+    active: true,
+    events: ['issues', 'issue_comment'],
+    config: {
+      url: 'http://fa4bb0f6.ngrok.io/postreceive',
+      content_type: 'json'
+    }
+  }
+
+  return fetch(`https://api.github.com/repos/${username}/${repoName}/hooks?access_token=${accessToken}`, {
+    method: 'post',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(config)
+  }).then(
+    data => data.json()
+  ).then((response) => {
+    return response
+  }
+  )
+}
+
+
 async function processLogin () {
   const code = await getCode()
   const auth = await getAuth(code)
@@ -58,9 +89,26 @@ async function processLogin () {
   }
 }
 
+async function processHook (repoName) {
+  await requestHook(repoName)
+  return {
+    type: types.HOOK_ADDED
+  }
+}
+
 export function login () {
   return dispatch => {
     processLogin().then(
+      data => {
+        dispatch(data)
+      }
+    )
+  }
+}
+
+export function addHook (repo) {
+  return dispatch => {
+    processHook(repo.name).then(
       data => {
         dispatch(data)
       }
