@@ -1,5 +1,5 @@
 var babel = require('gulp-babel')
-var changed = require('gulp-changed');
+var changed = require('gulp-changed')
 var concat = require('gulp-concat')
 var gulp = require('gulp')
 var plumber = require('gulp-plumber')
