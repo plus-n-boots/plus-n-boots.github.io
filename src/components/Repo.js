@@ -10,9 +10,10 @@ export default class {
 
   render () {
     const { actions, repo } = this.props
+    const actionMsg = `Add`
 
     return (
-      <li><input type='checkbox' onClick={() => actions.addHook(repo)} /> {repo.name}</li>
+      <li><a href='javascript:void(0)' onClick={() => actions.addHook(repo)}>{actionMsg}</a> {repo.name}</li>
     )
   }
 }
