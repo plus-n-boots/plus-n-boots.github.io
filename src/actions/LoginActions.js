@@ -40,12 +40,12 @@ async function getUserDetails (auth) {
   )
 }
 
-async function getRepos (reposApi) {
-  return fetch(`${reposApi}`).then((data) => {
+async function getRepos (auth) {
+  return fetch(`${GITHUB_API}user/repos?access_token=${auth.token}`).then((data) => {
     return data.json()
   }).then((data) => {
     return data.filter(repo => {
-      return !repo.fork
+      return !repo.fork && repo.owner.login === username
     })
   })
 }
@@ -61,7 +61,7 @@ async function requestHook (repoName) {
     }
   }
 
-  return fetch(`https://api.github.com/repos/${username}/${repoName}/hooks?access_token=${accessToken}`, {
+  return fetch(`${GITHUB_API}repos/${username}/${repoName}/hooks?access_token=${accessToken}`, {
     method: 'post',
     headers: {
       'Accept': 'application/json',
@@ -81,7 +81,7 @@ async function processLogin () {
   const code = await getCode()
   const auth = await getAuth(code)
   const details = await getUserDetails(auth)
-  const repos = await getRepos(details.repos_url)
+  const repos = await getRepos(auth)
   return {
     type: types.USER_LOGGED_IN,
     details,
