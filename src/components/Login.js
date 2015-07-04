@@ -9,6 +9,10 @@ export default class {
     user: PropTypes.object
   }
 
+  componentWillMount () {
+    this.props.actions.checkCache()
+  }
+
   render () {
     const { actions, user } = this.props
     const username = user.details ? user.details.login : ``

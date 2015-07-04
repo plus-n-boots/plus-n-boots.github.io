@@ -35,6 +35,8 @@ async function getUserDetails (auth) {
     data => data.json()
   ).then((response) => {
     username = response.login
+    localStorage.setItem('username', username)
+    localStorage.setItem('accesToken', accessToken)
     return response
   }
   )
@@ -93,6 +95,14 @@ async function processHook (repoName) {
   await requestHook(repoName)
   return {
     type: types.HOOK_ADDED
+  }
+}
+
+export function checkCache () {
+  const username = localStorage.getItem('username')
+  return {
+    type: types.CHECK_CACHE,
+    username
   }
 }
 

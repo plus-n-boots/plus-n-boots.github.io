@@ -1,12 +1,20 @@
 import * as constants from '../constants/ActionTypes'
 
 const initialState = {
-  details: null,
+  details: {},
   repos: []
 }
 
 export default function user (state = initialState, action) {
   switch (action.type) {
+  case constants.CHECK_CACHE:
+    state = {
+      details: {
+        login: action.username
+      },
+      repos: []
+    }
+    return state
   case constants.USER_LOGGED_IN:
     state = {
       details: action.details,
