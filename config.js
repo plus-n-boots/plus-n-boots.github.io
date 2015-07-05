@@ -5,7 +5,8 @@ System.config({
   "babelOptions": {
     "optional": [
       "runtime"
-    ]
+    ],
+    "stage": 0
   },
   "paths": {
     "*.js": "*.js",
@@ -161,4 +162,3 @@ System.config({
     }
   }
 });
-
