@@ -46,13 +46,17 @@ async function getRepos (auth) {
   return fetch(`${GITHUB_API}user/repos?access_token=${auth.token}`).then((data) => {
     return data.json()
   }).then((data) => {
-    return data.filter(repo => {
+    const hooked = data.map(repo => {
+      repo.hookAdded = false
+      return repo
+    })
+    return hooked.filter(repo => {
       return !repo.fork && repo.owner.login === username
     })
   })
 }
 
-async function requestHook (repoName) {
+async function requestHook (repoName, type) {
   const config = {
     name: 'web',
     active: true,
@@ -64,7 +68,7 @@ async function requestHook (repoName) {
   }
 
   return fetch(`${GITHUB_API}repos/${username}/${repoName}/hooks?access_token=${accessToken}`, {
-    method: 'post',
+    method: type === 'add' ? 'post' : 'delete',
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json'
@@ -73,7 +77,7 @@ async function requestHook (repoName) {
   }).then(
     data => data.json()
   ).then((response) => {
-    return response
+    return type === 'add' ? true : false
   }
   )
 }
@@ -91,9 +95,9 @@ async function processLogin () {
   }
 }
 
-async function addCollab (repoName) {
+async function requestCollab (repoName, type) {
   return fetch(`${GITHUB_API}repos/${username}/${repoName}/collaborators/plus-n-boots-official?access_token=${accessToken}`, {
-    method: 'put',
+    method: type  ===  'add' ? 'put' : 'delete',
     headers: {
       'Content-Length': 0
     }
@@ -105,16 +109,18 @@ async function addCollab (repoName) {
   )
 }
 
-async function processHook (repoName) {
-  await requestHook(repoName)
-  await addCollab(repoName)
+async function processHook (repo, type) {
+  await requestHook(repo.name, type)
+  await requestCollab(repo.name, type)
   return {
-    type: types.HOOK_ADDED
+    type: types.HOOK_ADDED,
+    repo
   }
 }
 
 export function checkCache () {
-  const username = localStorage.getItem('username')
+  // const username = localStorage.getItem('username')
+  const username = null
   return {
     type: types.CHECK_CACHE,
     username
@@ -133,7 +139,17 @@ export function login () {
 
 export function addHook (repo) {
   return dispatch => {
-    processHook(repo.name).then(
+    processHook(repo, 'add').then(
+      data => {
+        dispatch(data)
+      }
+    )
+  }
+}
+
+export function removeHook (repo) {
+  return dispatch => {
+    processHook(repo, 'remove').then(
       data => {
         dispatch(data)
       }

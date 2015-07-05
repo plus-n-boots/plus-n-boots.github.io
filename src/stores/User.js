@@ -8,24 +8,22 @@ const initialState = {
 export default function user (state = initialState, action) {
   switch (action.type) {
   case constants.CHECK_CACHE:
-    state = {
-      details: {
-        login: action.username
-      },
-      repos: []
-    }
     return state
   case constants.USER_LOGGED_IN:
-    state = {
+    return {
+      ...state,
       details: action.details,
       repos: action.repos
     }
-    return state
   case constants.USER_LOGGED_OUT:
-    state = initialState
-    return state
+    return initialState
   case constants.HOOK_ADDED:
-    return state
+    return {
+      ...state,
+      repos: state.repos.map(repo => repo.name === action.repo.name ?
+        { ...repo, hookAdded: !repo.hookAdded } :
+        repo)
+    }
   default:
     return state
   }
