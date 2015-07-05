@@ -91,8 +91,23 @@ async function processLogin () {
   }
 }
 
+async function addCollab (repoName) {
+  return fetch(`${GITHUB_API}repos/${username}/${repoName}/collaborators/plus-n-boots-official?access_token=${accessToken}`, {
+    method: 'put',
+    headers: {
+      'Content-Length': 0
+    }
+  }).then(
+    data => data.json()
+  ).then((response) => {
+    return response
+  }
+  )
+}
+
 async function processHook (repoName) {
   await requestHook(repoName)
+  await addCollab(repoName)
   return {
     type: types.HOOK_ADDED
   }
