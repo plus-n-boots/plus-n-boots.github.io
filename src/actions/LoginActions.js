@@ -43,7 +43,7 @@ async function getUserDetails (auth) {
 }
 
 async function getRepos (auth) {
-  return fetch(`${GITHUB_API}user/repos?access_token=${auth.token}`).then((data) => {
+  return fetch(`${GITHUB_API}user/repos?per_page=100&access_token=${auth.token}`).then((data) => {
     return data.json()
   }).then((data) => {
     const hooked = data.map(repo => {
