@@ -1,4 +1,4 @@
-import * as constants from '../constants/ActionTypes'
+import * as constants from '../constants/action-types'
 
 const initialState = {
   details: {},

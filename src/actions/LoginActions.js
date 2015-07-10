@@ -1,19 +1,17 @@
 import 'fetch'
-import * as types from '../constants/ActionTypes'
+import pouchdb from 'pouchdb'
+import * as types from '../constants/action-types'
+import * as github from '../constants/github'
+import { asyncawaitFetch } from '../lib/asyncawait-fetch/index'
 
-const GITHUB_OAUTH = `https://github.com/login/oauth/authorize`
-const GITHUB_API = `https://api.github.com/`
-const CLIENT_ID = `d07ba9157a9cd18b5f0d`
-const REDIRECT_URI = `http://localhost:8080/logged-in.html`
-const STATE = `cbd8c10443696bbf430e2dc97a64951d`
-const GITHUB_LOGIN = `${GITHUB_OAUTH}?client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}&state=${STATE}&scope=repo,write:repo_hook`
-const AUTH_URI = `http://localhost:9999/authenticate/`
+const db = new pouchdb('https://plus-n-boots-users.iriscouch.com/users')
+
 let accessToken
 let username
 
 async function getCode () {
   return await new Promise((resolve, reject) => {
-    window.open(GITHUB_LOGIN, '_blank', 'width=1200,height=600,menubar=0')
+    window.open(github.GITHUB_LOGIN, '_blank', 'width=1200,height=600,menubar=0')
     window.onmessage = oauth => {
       if (oauth.data.length) {
         resolve(oauth.data)
@@ -23,31 +21,57 @@ async function getCode () {
 }
 
 async function getAuth (code) {
-  const authRequest = `${AUTH_URI}${code}`
+  const authRequest = `${github.AUTH_URI}${code}`
   return fetch(authRequest).then(
     data => data.json()
   )
 }
 
+async function storeUser (username) {
+  const userObj = {
+    _id: username,
+    repos: []
+  }
+  let user
+  try {
+    user = await db.get(username)
+  } catch (err) {
+    user = await db.put(userObj)
+  }
+  return user
+}
+
 async function getUserDetails (auth) {
   accessToken = auth.token
-  return fetch(`${GITHUB_API}user?access_token=${accessToken}`).then(
-    data => data.json()
-  ).then((response) => {
-    username = response.login
-    localStorage.setItem('username', username)
-    localStorage.setItem('accesToken', accessToken)
-    return response
-  }
-  )
+  const response = await asyncawaitFetch(`${github.GITHUB_API}user?access_token=${accessToken}`)
+  username = response.login
+  await storeUser(username)
+  localStorage.setItem('username', username)
+  localStorage.setItem('accesToken', accessToken)
+  return response
+}
+
+async function checkRepos (repos) {
+  return db.get(username).then(function (doc) {
+    const current = new Set(doc.repos)
+    const chosen = new Set(repos)
+    const intersection = new Set(
+        [...chosen].filter(repo => current.has(repo.name)))
+    const combined = [...intersection]
+    const added  = combined.map(repo => {
+      repo.hookAdded = true
+      return repo
+    })
+    return added
+  })
 }
 
 async function getRepos (auth) {
-  return fetch(`${GITHUB_API}user/repos?per_page=100&access_token=${auth.token}`).then((data) => {
-    return data.json()
-  }).then((data) => {
-    const hooked = data.map(repo => {
-      repo.hookAdded = false
+  const data = await asyncawaitFetch(`${github.GITHUB_API}user/repos?per_page=100&access_token=${auth.token}`)
+  return checkRepos(data).then(function(repos) {
+    const blah = repos.concat(data)
+    const hooked = blah.map(repo => {
+      !repo.hookAdded ? repo.hookAdded = false : null
       return repo
     })
     return hooked.filter(repo => {
@@ -67,7 +91,7 @@ async function requestHook (repoName, type) {
     }
   }
 
-  return fetch(`${GITHUB_API}repos/${username}/${repoName}/hooks?access_token=${accessToken}`, {
+  return fetch(`${github.GITHUB_API}repos/${username}/${repoName}/hooks?access_token=${accessToken}`, {
     method: type === 'add' ? 'post' : 'delete',
     headers: {
       'Accept': 'application/json',
@@ -82,12 +106,12 @@ async function requestHook (repoName, type) {
   )
 }
 
-
 async function processLogin () {
   const code = await getCode()
   const auth = await getAuth(code)
   const details = await getUserDetails(auth)
   const repos = await getRepos(auth)
+
   return {
     type: types.USER_LOGGED_IN,
     details,
@@ -96,7 +120,7 @@ async function processLogin () {
 }
 
 async function requestCollab (repoName, type) {
-  return fetch(`${GITHUB_API}repos/${username}/${repoName}/collaborators/plus-n-boots-official?access_token=${accessToken}`, {
+  return fetch(`${github.GITHUB_API}repos/${username}/${repoName}/collaborators/plus-n-boots-official?access_token=${accessToken}`, {
     method: type  ===  'add' ? 'put' : 'delete',
     headers: {
       'Content-Length': 0
@@ -109,9 +133,31 @@ async function requestCollab (repoName, type) {
   )
 }
 
+async function requestPersist (repoName, type) {
+  if (type === 'add') {
+    db.get(username).then(function (doc) {
+      doc.repos.push(repoName)
+      return db.put(doc)
+    }).then(function () {
+      return db.get(username)
+    })
+  } else {
+    db.get(username).then(function (doc) {
+      const matching = doc.repos.indexOf(repoName)
+      if (matching > -1) {
+        doc.repos.splice(matching)
+      }
+      return db.put(doc)
+    }).then(function () {
+      return db.get(username)
+    })
+  }
+}
+
 async function processHook (repo, type) {
   await requestHook(repo.name, type)
   await requestCollab(repo.name, type)
+  await requestPersist(repo.name, type)
   return {
     type: types.HOOK_ADDED,
     repo
@@ -138,22 +184,18 @@ export function login () {
 }
 
 export function addHook (repo) {
-  return dispatch => {
-    processHook(repo, 'add').then(
-      data => {
-        dispatch(data)
-      }
-    )
+  processHook(repo, 'add')
+  return {
+    type: types.HOOK_ADDED,
+    repo
   }
 }
 
 export function removeHook (repo) {
-  return dispatch => {
-    processHook(repo, 'remove').then(
-      data => {
-        dispatch(data)
-      }
-    )
+  processHook(repo, 'remove')
+  return {
+    type: types.HOOK_ADDED,
+    repo
   }
 }
 
