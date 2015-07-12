@@ -1,8 +1,7 @@
-import 'fetch'
 import pouchdb from 'pouchdb'
 import * as types from '../constants/action-types'
 import * as github from '../constants/github'
-import { asyncawaitFetch } from '../lib/asyncawait-fetch/index'
+import { asyncawaitFetch as fetch } from '../lib/asyncawait-fetch/index'
 
 const db = new pouchdb('https://plus-n-boots-users.iriscouch.com/users')
 
@@ -22,61 +21,56 @@ async function getCode () {
 
 async function getAuth (code) {
   const authRequest = `${github.AUTH_URI}${code}`
-  return fetch(authRequest).then(
-    data => data.json()
-  )
+  return await fetch(authRequest)
 }
 
-async function storeUser (username) {
-  const userObj = {
+async function userSetup (username) {
+  const scaffold = {
     _id: username,
     repos: []
   }
-  let user
+
   try {
-    user = await db.get(username)
+    await db.get(username)
   } catch (err) {
-    user = await db.put(userObj)
+    console.info(`${username} not found, adding`)
+    await db.put(scaffold)
   }
-  return user
 }
 
 async function getUserDetails (auth) {
   accessToken = auth.token
-  const response = await asyncawaitFetch(`${github.GITHUB_API}user?access_token=${accessToken}`)
+  const response = await fetch(`${github.GITHUB_API}user?access_token=${accessToken}`)
   username = response.login
-  await storeUser(username)
-  localStorage.setItem('username', username)
-  localStorage.setItem('accesToken', accessToken)
+  await userSetup(username)
+  // localStorage.setItem('username', username)
+  // localStorage.setItem('accesToken', accessToken)
   return response
 }
 
 async function checkRepos (repos) {
-  return db.get(username).then(function (doc) {
-    const current = new Set(doc.repos)
-    const chosen = new Set(repos)
-    const intersection = new Set(
-        [...chosen].filter(repo => current.has(repo.name)))
-    const combined = [...intersection]
-    const added  = combined.map(repo => {
-      repo.hookAdded = true
-      return repo
-    })
-    return added
+  const doc = await db.get(username)
+  const current = new Set(doc.repos.map(repo => repo.name))
+  const chosen = new Set(repos)
+  const intersection = new Set([...chosen].filter(repo => current.has(repo.name)))
+  const combined = [...intersection]
+  const added  = combined.map(repo => {
+    repo.hookAdded = true
+    return repo
   })
+  return added
 }
 
 async function getRepos (auth) {
-  const data = await asyncawaitFetch(`${github.GITHUB_API}user/repos?per_page=100&access_token=${auth.token}`)
-  return checkRepos(data).then(function(repos) {
-    const blah = repos.concat(data)
-    const hooked = blah.map(repo => {
-      !repo.hookAdded ? repo.hookAdded = false : null
-      return repo
-    })
-    return hooked.filter(repo => {
-      return !repo.fork && repo.owner.login === username
-    })
+  const data = await fetch(`${github.GITHUB_API}user/repos?per_page=100&access_token=${auth.token}`)
+  const repos = await checkRepos(data)
+  const combined = repos.concat(data)
+  const hooked = combined.map(repo => {
+    !repo.hookAdded ? repo.hookAdded = false : null
+    return repo
+  })
+  return hooked.filter(repo => {
+    return !repo.fork && repo.owner.login === username
   })
 }
 
@@ -90,20 +84,15 @@ async function requestHook (repoName, type) {
       content_type: 'json'
     }
   }
-
-  return fetch(`${github.GITHUB_API}repos/${username}/${repoName}/hooks?access_token=${accessToken}`, {
-    method: type === 'add' ? 'post' : 'delete',
+  const data = await fetch(`${github.GITHUB_API}repos/${username}/${repoName}/hooks?access_token=${accessToken}`, {
+    method: 'post',
     headers: {
       'Accept': 'application/json',
       'Content-Type': 'application/json'
     },
     body: JSON.stringify(config)
-  }).then(
-    data => data.json()
-  ).then((response) => {
-    return type === 'add' ? true : false
-  }
-  )
+  })
+  return data.id
 }
 
 async function processLogin () {
@@ -111,7 +100,6 @@ async function processLogin () {
   const auth = await getAuth(code)
   const details = await getUserDetails(auth)
   const repos = await getRepos(auth)
-
   return {
     type: types.USER_LOGGED_IN,
     details,
@@ -120,44 +108,51 @@ async function processLogin () {
 }
 
 async function requestCollab (repoName, type) {
-  return fetch(`${github.GITHUB_API}repos/${username}/${repoName}/collaborators/plus-n-boots-official?access_token=${accessToken}`, {
+  const data = await fetch(`${github.GITHUB_API}repos/${username}/${repoName}/collaborators/plus-n-boots-official?access_token=${accessToken}`, {
     method: type  ===  'add' ? 'put' : 'delete',
     headers: {
       'Content-Length': 0
     }
-  }).then(
-    data => data.json()
-  ).then((response) => {
-    return response
-  }
-  )
+  })
+  return data
 }
 
-async function requestPersist (repoName, type) {
+async function requestPersist (repoName, hookId, type) {
   if (type === 'add') {
-    db.get(username).then(function (doc) {
-      doc.repos.push(repoName)
-      return db.put(doc)
-    }).then(function () {
-      return db.get(username)
+    const doc = await db.get(username)
+    doc.repos.push({
+      name: repoName,
+      hook: hookId
     })
+    db.put(doc)
   } else {
-    db.get(username).then(function (doc) {
-      const matching = doc.repos.indexOf(repoName)
-      if (matching > -1) {
-        doc.repos.splice(matching)
-      }
-      return db.put(doc)
-    }).then(function () {
-      return db.get(username)
-    })
+    const doc = await db.get(username)
+    const matching = doc.repos.map(repo => repo.name).indexOf(repoName)
+    if (matching > -1) {
+      deleteHook(repoName, doc.repos[matching].hook)
+      doc.repos.splice(matching, 1)
+    }
+    db.put(doc)
   }
+}
+
+async function deleteHook (repoName, hookId) {
+  await fetch(`${github.GITHUB_API}repos/${username}/${repoName}/hooks/${hookId}?access_token=${accessToken}`, {
+    method: 'delete',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    }
+  })
 }
 
 async function processHook (repo, type) {
-  await requestHook(repo.name, type)
+  let hookId = null
+  if (type === 'add') {
+    hookId = await requestHook(repo.name, type)
+  }
   await requestCollab(repo.name, type)
-  await requestPersist(repo.name, type)
+  await requestPersist(repo.name, hookId, type)
   return {
     type: types.HOOK_ADDED,
     repo
