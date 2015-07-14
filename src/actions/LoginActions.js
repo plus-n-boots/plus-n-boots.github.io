@@ -61,6 +61,17 @@ async function checkRepos (repos) {
   return added
 }
 
+async function getOrgs (auth) {
+  const data = await fetch(`${github.GITHUB_API}user/repos?per_page=100&access_token=${auth.token}`)
+  let orgs = []
+  data.filter(repo => {
+    if (orgs.indexOf(repo.owner.login) === -1) {
+      orgs.push(repo.owner.login)
+    }
+  })
+  return orgs
+}
+
 async function getRepos (auth) {
   const data = await fetch(`${github.GITHUB_API}user/repos?per_page=100&access_token=${auth.token}`)
   const repos = await checkRepos(data)
@@ -70,7 +81,7 @@ async function getRepos (auth) {
     return repo
   })
   return hooked.filter(repo => {
-    return !repo.fork && repo.owner.login === username
+    return !repo.fork
   })
 }
 
@@ -100,10 +111,27 @@ async function processLogin () {
   const auth = await getAuth(code)
   const details = await getUserDetails(auth)
   const repos = await getRepos(auth)
+  const orgNames = await getOrgs(auth)
+  const orgs = orgNames.map(org => {
+    return {
+      'name': org,
+      'repos': []
+    }
+  })
+
+  repos.map(repo => {
+    orgs.map((org, i) => {
+      if (repo.owner.login === org) {
+        orgs[i].repos.push(repo)
+      }
+    })
+  })
+
   return {
     type: types.USER_LOGGED_IN,
     details,
-    repos
+    repos,
+    orgs
   }
 }
 
