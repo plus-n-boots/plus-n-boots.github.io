@@ -2,7 +2,7 @@ import * as constants from '../constants/action-types'
 
 const initialState = {
   details: {},
-  repos: []
+  orgs: []
 }
 
 export default function user (state = initialState, action) {
@@ -13,16 +13,23 @@ export default function user (state = initialState, action) {
     return {
       ...state,
       details: action.details,
-      repos: action.repos
+      orgs: action.orgs
     }
   case constants.USER_LOGGED_OUT:
     return initialState
-  case constants.HOOK_ADDED:
+  case constants.HOOK_AMENDED:
     return {
       ...state,
-      repos: state.repos.map(repo => repo.name === action.repo.name ?
-        { ...repo, hookAdded: !repo.hookAdded } :
-        repo)
+      orgs: [...state.orgs.map(org => {
+        return {
+          ...org,
+          repos: org.repos.map(repo => {
+            return repo.id === action.repo.id ?
+              { ...repo, hookAdded: !repo.hookAdded } :
+              repo
+          })
+        }
+      })]
     }
   default:
     return state
