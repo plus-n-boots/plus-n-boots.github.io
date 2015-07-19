@@ -1,8 +1,8 @@
 import React, { PropTypes } from 'react'
-import Repos from './Repos'
+import Orgs from './Orgs'
 
 export default class {
-  static displayName = 'Login'
+  static displayName = 'User'
 
   static PropTypes = {
     actions: PropTypes.object.isRequired,
@@ -17,13 +17,13 @@ export default class {
     const { actions, user } = this.props
     const username = user.details ? user.details.login : ``
     const repos = user ? user.repos : null
+    const orgs = user ? user.orgs : []
     const loggedInMsg = username ? `Log Out` : `Log In`
-    const action = username ? actions.logout : actions.login
+    const loginAction = username ? actions.logout : actions.login
     return (
       <section>
-        <a href='javascript:void(0)' onClick={action}>{loggedInMsg}</a>
-        <p>{username}</p>
-        <Repos repos={repos} actions={actions} />
+        <a href='javascript:void(0)' onClick={loginAction}>{loggedInMsg}</a>
+        <Orgs orgs={orgs} actions={actions} />
       </section>
     )
   }
