@@ -24,16 +24,17 @@ async function getAuth (code) {
   return await fetch(authRequest)
 }
 
-async function userSetup (username) {
+async function orgInit (orgname) {
+  console.log('orgname', orgname)
   const scaffold = {
-    _id: username,
+    _id: orgname,
     repos: []
   }
 
   try {
-    await db.get(username)
+    await db.get(orgname)
   } catch (err) {
-    console.info(`${username} not found, adding`)
+    console.info(`${orgname} not found, adding to db`)
     await db.put(scaffold)
   }
 }
@@ -42,10 +43,42 @@ async function getUserDetails (auth) {
   accessToken = auth.token
   const response = await fetch(`${github.GITHUB_API}user?access_token=${accessToken}`)
   username = response.login
-  await userSetup(username)
   // localStorage.setItem('username', username)
   // localStorage.setItem('accesToken', accessToken)
   return response
+}
+
+async function getOrgs (auth) {
+  const foo = await fetch(`${github.GITHUB_API}user/orgs?access_token=${auth.token}`)
+  const orgNames = foo.map(org => {
+    return org.login
+  })
+  orgNames.unshift(username)
+  return orgNames
+}
+
+async function buildOrgs (auth) {
+  const orgNames = await getOrgs(auth)
+
+  return orgNames.map(org => {
+    return {
+      'name': org,
+      'repos': []
+    }
+  })
+}
+
+async function getRepos () {
+  const data = await fetch(`${github.GITHUB_API}user/repos?per_page=100&access_token=${accessToken}`)
+  const repos = await checkRepos(data)
+  const combined = repos.concat(data)
+  const hooked = combined.map(repo => {
+    !repo.hookAdded ? repo.hookAdded = false : null
+    return repo
+  })
+  return hooked.filter(repo => {
+    return !repo.fork && repo.owner.login === username
+  })
 }
 
 async function checkRepos (repos) {
@@ -55,34 +88,10 @@ async function checkRepos (repos) {
   const intersection = new Set([...chosen].filter(repo => current.has(repo.name)))
   const combined = [...intersection]
   const added  = combined.map(repo => {
-    repo.hookAdded = true
+    repo.hookAdded = !repo.hookAdded
     return repo
   })
   return added
-}
-
-async function getOrgs (auth) {
-  const data = await fetch(`${github.GITHUB_API}user/repos?per_page=100&access_token=${auth.token}`)
-  let orgs = []
-  data.filter(repo => {
-    if (orgs.indexOf(repo.owner.login) === -1) {
-      orgs.push(repo.owner.login)
-    }
-  })
-  return orgs
-}
-
-async function getRepos (auth) {
-  const data = await fetch(`${github.GITHUB_API}user/repos?per_page=100&access_token=${auth.token}`)
-  const repos = await checkRepos(data)
-  const combined = repos.concat(data)
-  const hooked = combined.map(repo => {
-    !repo.hookAdded ? repo.hookAdded = false : null
-    return repo
-  })
-  return hooked.filter(repo => {
-    return !repo.fork
-  })
 }
 
 async function requestHook (repoName, type) {
@@ -106,31 +115,29 @@ async function requestHook (repoName, type) {
   return data.id
 }
 
+async function mapRepos (org) {
+  if (org.name === username) {
+    const repos = await getRepos()
+    org.repos = repos
+  }
+
+  return org
+}
+
 async function processLogin () {
   const code = await getCode()
   const auth = await getAuth(code)
   const details = await getUserDetails(auth)
-  const repos = await getRepos(auth)
-  const orgNames = await getOrgs(auth)
-  const orgs = orgNames.map(org => {
-    return {
-      'name': org,
-      'repos': []
-    }
-  })
-
-  repos.map(repo => {
-    orgs.map((org, i) => {
-      if (repo.owner.login === org) {
-        orgs[i].repos.push(repo)
-      }
-    })
-  })
+  const foo = await buildOrgs(auth)
+  let orgs = []
+  for (const org of foo) {
+    await orgInit(org.name)
+    orgs.push(await mapRepos(org))
+  }
 
   return {
     type: types.USER_LOGGED_IN,
     details,
-    repos,
     orgs
   }
 }
@@ -182,7 +189,7 @@ async function processHook (repo, type) {
   await requestCollab(repo.name, type)
   await requestPersist(repo.name, hookId, type)
   return {
-    type: types.HOOK_ADDED,
+    type: types.HOOK_AMENDED,
     repo
   }
 }
@@ -209,7 +216,7 @@ export function login () {
 export function addHook (repo) {
   processHook(repo, 'add')
   return {
-    type: types.HOOK_ADDED,
+    type: types.HOOK_AMENDED,
     repo
   }
 }
@@ -217,7 +224,7 @@ export function addHook (repo) {
 export function removeHook (repo) {
   processHook(repo, 'remove')
   return {
-    type: types.HOOK_ADDED,
+    type: types.HOOK_AMENDED,
     repo
   }
 }
