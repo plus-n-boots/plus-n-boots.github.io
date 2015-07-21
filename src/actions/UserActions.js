@@ -25,7 +25,6 @@ async function getAuth (code) {
 }
 
 async function orgInit (orgname) {
-  console.log('orgname', orgname)
   const scaffold = {
     _id: orgname,
     repos: []
