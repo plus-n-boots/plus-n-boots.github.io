@@ -9,14 +9,9 @@ export default class {
     user: PropTypes.object
   }
 
-  componentWillMount () {
-    this.props.actions.checkCache()
-  }
-
   render () {
     const { actions, user } = this.props
     const username = user.details ? user.details.login : ``
-    const repos = user ? user.repos : null
     const orgs = user ? user.orgs : []
     const loggedInMsg = username ? `Log Out` : `Log In`
     const loginAction = username ? actions.logout : actions.login
