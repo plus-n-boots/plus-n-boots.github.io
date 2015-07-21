@@ -17,7 +17,7 @@ export default class {
     const loginAction = username ? actions.logout : actions.login
     return (
       <section>
-        <a href='javascript:void(0)' onClick={loginAction}>{loggedInMsg}</a>
+        <a onClick={loginAction}>{loggedInMsg}</a>
         <Orgs orgs={orgs} actions={actions} />
       </section>
     )

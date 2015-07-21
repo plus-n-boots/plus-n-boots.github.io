@@ -13,7 +13,7 @@ export default class {
     const hookAction = repo.hookAdded ? actions.removeHook : actions.addHook
     const actionMsg = repo.hookAdded ? `Remove` : `Add`
     return (
-      <li>{repo.name} <a href='javascript:void(0)' onClick={() => hookAction(repo)}>{actionMsg}</a></li>
+      <li>{repo.name} <a onClick={() => hookAction(repo)}>{actionMsg}</a></li>
     )
   }
 }

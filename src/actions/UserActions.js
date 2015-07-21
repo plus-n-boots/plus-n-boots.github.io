@@ -1,15 +1,15 @@
-import pouchdb from 'pouchdb'
+import PouchDB from 'pouchdb'
 import * as types from '../constants/action-types'
 import * as github from '../constants/github'
 import { asyncawaitFetch as fetch } from '../lib/asyncawait-fetch/index'
 
-const db = new pouchdb('https://plus-n-boots-users.iriscouch.com/users')
+const db = new PouchDB('https://plus-n-boots-users.iriscouch.com/users')
 
 let accessToken
 let username
 
 async function getCode () {
-  return await new Promise((resolve, reject) => {
+  return await new Promise((resolve) => {
     window.open(github.GITHUB_LOGIN, '_blank', 'width=1200,height=600,menubar=0')
     window.onmessage = oauth => {
       if (oauth.data.length) {
@@ -67,12 +67,27 @@ async function buildOrgs (auth) {
   })
 }
 
+async function checkRepos (repos) {
+  const doc = await db.get(username)
+  const current = new Set(doc.repos.map(repo => repo.name))
+  const chosen = new Set(repos)
+  const intersection = new Set([...chosen].filter(repo => current.has(repo.name)))
+  const combined = [...intersection]
+  const added = combined.map(repo => {
+    repo.hookAdded = !repo.hookAdded
+    return repo
+  })
+  return added
+}
+
 async function getRepos () {
   const data = await fetch(`${github.GITHUB_API}user/repos?per_page=100&access_token=${accessToken}`)
   const repos = await checkRepos(data)
   const combined = repos.concat(data)
   const hooked = combined.map(repo => {
-    !repo.hookAdded ? repo.hookAdded = false : null
+    if (!repo.hookAdded) {
+      repo.hookAdded = false
+    }
     return repo
   })
   return hooked.filter(repo => {
@@ -80,27 +95,14 @@ async function getRepos () {
   })
 }
 
-async function checkRepos (repos) {
-  const doc = await db.get(username)
-  const current = new Set(doc.repos.map(repo => repo.name))
-  const chosen = new Set(repos)
-  const intersection = new Set([...chosen].filter(repo => current.has(repo.name)))
-  const combined = [...intersection]
-  const added  = combined.map(repo => {
-    repo.hookAdded = !repo.hookAdded
-    return repo
-  })
-  return added
-}
-
-async function requestHook (repoName, type) {
+async function requestHook (repoName) {
   const config = {
     name: 'web',
     active: true,
     events: ['issues', 'issue_comment'],
     config: {
       url: 'http://fa4bb0f6.ngrok.io/postreceive',
-      content_type: 'json'
+      'content_type': 'json'
     }
   }
   const data = await fetch(`${github.GITHUB_API}repos/${username}/${repoName}/hooks?access_token=${accessToken}`, {
@@ -143,7 +145,7 @@ async function processLogin () {
 
 async function requestCollab (repoName, type) {
   const data = await fetch(`${github.GITHUB_API}repos/${username}/${repoName}/collaborators/plus-n-boots-official?access_token=${accessToken}`, {
-    method: type  ===  'add' ? 'put' : 'delete',
+    method: type === 'add' ? 'put' : 'delete',
     headers: {
       'Content-Length': 0
     }
@@ -195,7 +197,7 @@ async function processHook (repo, type) {
 
 export function checkCache () {
   // const username = localStorage.getItem('username')
-  const username = null
+  // const username = null
   return {
     type: types.CHECK_CACHE,
     username
