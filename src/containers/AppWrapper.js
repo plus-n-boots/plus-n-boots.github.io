@@ -19,6 +19,8 @@ const finalCreateStore = compose(
 const reducer = combineReducers(reducers)
 const store = finalCreateStore(reducer)
 
+window.__redux__ = store
+
 export default class AppWrapper extends Component {
 
   constructor (props) {
@@ -36,10 +38,6 @@ export default class AppWrapper extends Component {
             </Router>
           }
         </Provider>
-        <DebugPanel top bottom>
-          <DevTools store={store}
-                    monitor={LogMonitor} />
-        </DebugPanel>
       </div>
     )
   }
