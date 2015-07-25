@@ -41,5 +41,5 @@ async function req (request, options, type) {
  * public api
  */
 export async function asyncawaitFetch (request, options = null, type = null) {
-  return await req(request, options)
+  return await req(request, options, type)
 }
