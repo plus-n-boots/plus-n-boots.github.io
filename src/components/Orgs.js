@@ -17,7 +17,7 @@ export default class {
           {orgs.map(org =>
             <section>
               <p>{org.name}</p>
-              <Repos repos={org.repos} actions={actions} />
+              <Repos key={org.name} repos={org.repos} actions={actions} />
             </section>
           )}
         </ul>
