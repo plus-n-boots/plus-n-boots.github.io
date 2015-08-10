@@ -26,11 +26,11 @@ async function req (request, options, type) {
     return res.json()
   }
 
-  if (contentType.indexOf('html') > -1) {
+  if (/html/.test(contentType)) {
     return res.text()
   }
 
-  if (contentType.indexOf('json') > -1) {
+  if (/json/.test(contentType)) {
     return res.json()
   }
 
