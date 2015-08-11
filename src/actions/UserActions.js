@@ -186,8 +186,6 @@ async function processHook (repo, type) {
 }
 
 export function checkCache () {
-  // const username = localStorage.getItem('username')
-  // const username = null
   return {
     type: types.CHECK_CACHE,
     username
