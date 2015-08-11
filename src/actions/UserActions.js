@@ -48,10 +48,9 @@ async function getUserDetails (auth) {
 }
 
 async function getOrgs (auth) {
-  const foo = await fetch(`${github.GITHUB_API}user/orgs?access_token=${auth.token}`)
-  const orgNames = foo.map(org => {
-    return org.login
-  })
+  const orgs = await fetch(`${github.GITHUB_API}user/orgs?access_token=${auth.token}`)
+  const orgNames = orgs.map(org => org.login)
+  // add username as top level org, for users own repos
   orgNames.unshift(username)
   return orgNames
 }
@@ -120,9 +119,9 @@ async function processLogin () {
   const code = await getCode()
   const auth = await getAuth(code)
   const details = await getUserDetails(auth)
-  const foo = await buildOrgs(auth)
+  const orgsScaffold = await buildOrgs(auth)
   let orgs = []
-  for (const org of foo) {
+  for (const org of orgsScaffold) {
     await orgInit(org.name)
     orgs.push(await mapRepos(org))
   }
