@@ -1,4 +1,5 @@
 import PouchDB from 'pouchdb'
+import _ from 'lodash'
 import * as types from '../constants/action-types'
 import * as github from '../constants/github'
 import { asyncawaitFetch as fetch } from '../lib/asyncawait-fetch/index'
@@ -41,9 +42,8 @@ async function orgInit (orgname) {
 async function getUserDetails (auth) {
   accessToken = auth.token
   const response = await fetch(`${github.GITHUB_API}user?access_token=${accessToken}`)
+  // set username globally
   username = response.login
-  // localStorage.setItem('username', username)
-  // localStorage.setItem('accesToken', accessToken)
   return response
 }
 
@@ -69,28 +69,19 @@ async function buildOrgs (auth) {
 
 async function checkRepos (repos) {
   const doc = await db.get(username)
-  const current = new Set(doc.repos.map(repo => repo.name))
-  const chosen = new Set(repos)
-  const intersection = new Set([...chosen].filter(repo => current.has(repo.name)))
-  const combined = [...intersection]
-  const added = combined.map(repo => {
-    repo.hookAdded = !repo.hookAdded
+  const saved = doc.repos.map(repo => repo.name)
+  return repos.map(repo => {
+    if (_.includes(saved, repo.name)) {
+      repo.hookAdded = true
+    }
     return repo
   })
-  return added
 }
 
 async function getRepos () {
   const data = await fetch(`${github.GITHUB_API}user/repos?per_page=100&access_token=${accessToken}`)
   const repos = await checkRepos(data)
-  const combined = repos.concat(data)
-  const hooked = combined.map(repo => {
-    if (!repo.hookAdded) {
-      repo.hookAdded = false
-    }
-    return repo
-  })
-  return hooked.filter(repo => {
+  return repos.filter(repo => {
     return !repo.fork && repo.owner.login === username
   })
 }
