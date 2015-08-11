@@ -15,7 +15,7 @@ export default class {
       <section>
         <ul>
           {repos.map(repo =>
-            <Repo key={repo.id} repo={repo} actions={actions} />
+            <Repo key={repo.name} repo={repo} actions={actions} />
           )}
         </ul>
       </section>
