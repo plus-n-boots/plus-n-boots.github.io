@@ -44,7 +44,11 @@ async function getUserDetails (auth) {
   const response = await fetch(`${github.GITHUB_API}user?access_token=${accessToken}`)
   // set username globally
   username = response.login
-  return response
+  const user = {
+    name: response.name,
+    id: response.id
+  }
+  return user
 }
 
 async function getOrgs (auth) {
@@ -70,8 +74,15 @@ async function checkRepos (repos) {
   const doc = await db.get(username)
   const saved = doc.repos.map(repo => repo.name)
   return repos.map(repo => {
+    repo = {
+      id: repo.id,
+      name: repo.name,
+      fork: repo.fork
+    }
     if (_.includes(saved, repo.name)) {
       repo.hookAdded = true
+    } else {
+      repo.hookAdded = false
     }
     return repo
   })
