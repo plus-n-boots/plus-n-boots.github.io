@@ -27,7 +27,7 @@ module.exports = {
     alias: {
       'react': path.join(__dirname, 'node_modules', 'react')
     },
-    extensions: ['', '.js', '.jsx']
+    extensions: ['', '.js', 'jsx', '.css']
   },
   module: {
     loaders: [{
@@ -36,9 +36,12 @@ module.exports = {
       exclude: /node_modules/,
       include: path.join(__dirname, 'src')
     },
+    { test: /\.css$/,
+      loader: 'style-loader!css-loader'
+    },
     {
       test: /\.json$/,
-      loader: "json"
+      loader: 'json'
     }]
   },
   node: {
