@@ -78,10 +78,10 @@ async function checkRepos (repos) {
 }
 
 async function getRepos () {
-  const data = await fetch(`${github.GITHUB_API}user/repos?per_page=100&access_token=${accessToken}`)
+  const data = await fetch(`${github.GITHUB_API}user/repos?per_page=100&affiliation=owner&access_token=${accessToken}`)
   const repos = await checkRepos(data)
   return repos.filter(repo => {
-    return !repo.fork && repo.owner.login === username
+    return !repo.fork
   })
 }
 
