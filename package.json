@@ -30,6 +30,7 @@
     "imports-loader": "^0.6.4",
     "json-loader": "^0.5.2",
     "lodash": "^3.10.1",
+    "material-design-lite": "^1.0.2",
     "node-libs-browser": "^0.5.2",
     "pouchdb": "^3.6.0",
     "react": "^0.14.0-alpha3",
