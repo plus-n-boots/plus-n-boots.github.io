@@ -4,7 +4,8 @@ import * as types from '../constants/action-types'
 import * as github from '../constants/github'
 import { asyncawaitFetch as fetch } from '../lib/asyncawait-fetch/index'
 
-const db = new PouchDB('https://plus-n-boots-users.iriscouch.com/users')
+const db = new PouchDB('plus-n-boots')
+const remoteCouch = false
 
 let accessToken
 let username
