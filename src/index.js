@@ -1,7 +1,9 @@
 import React from 'react'
 import AppWrapper from './containers/AppWrapper'
+import './material.min.css'
+import './mdl.css'
 
 React.render(
   <AppWrapper />,
-  document.querySelector('main')
+  document.querySelector('wrapper')
 )
