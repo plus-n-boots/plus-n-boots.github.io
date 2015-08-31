@@ -4,6 +4,9 @@ import * as types from '../constants/action-types'
 import * as github from '../constants/github'
 import { asyncawaitFetch as fetch } from '../lib/asyncawait-fetch/index'
 
+// expose pouchdb on window for pouchdb chrome extension
+window.PouchDB = PouchDB
+
 const db = new PouchDB('plus-n-boots')
 const remoteCouch = false
 
@@ -46,8 +49,9 @@ async function getUserDetails (auth) {
   // set username globally
   username = response.login
   const user = {
-    name: response.name,
-    id: response.id
+    login: response.login,
+    id: response.id,
+    img: response.avatar_url
   }
   return user
 }
@@ -65,8 +69,8 @@ async function buildOrgs (auth) {
 
   return orgNames.map(org => {
     return {
-      'name': org,
-      'repos': []
+      name: org,
+      repos: []
     }
   })
 }
@@ -78,7 +82,11 @@ async function checkRepos (repos) {
     repo = {
       id: repo.id,
       name: repo.name,
-      fork: repo.fork
+      fork: repo.fork,
+      has_issues: repo.has_issues,
+      private: repo.private,
+      url: repo.url,
+      watchers_count: repo.watchers_count
     }
     if (_.includes(saved, repo.name)) {
       repo.hookAdded = true
@@ -93,7 +101,7 @@ async function getRepos () {
   const data = await fetch(`${github.GITHUB_API}user/repos?per_page=100&affiliation=owner&access_token=${accessToken}`)
   const repos = await checkRepos(data)
   return repos.filter(repo => {
-    return !repo.fork
+    return !repo.fork && repo.has_issues
   })
 }
 
