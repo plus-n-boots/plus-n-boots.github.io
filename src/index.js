@@ -1,8 +1,6 @@
 import React from 'react'
 import AppWrapper from './containers/AppWrapper'
-import './main.css'
-import './material.min.css'
-import './mdl.css'
+import 'material-design-lite/material.css'
 
 React.render(
   <AppWrapper />,
