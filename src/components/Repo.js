@@ -21,7 +21,7 @@ export default class {
 
     return (
       <section onClick={() => hookAction(repo)}>
-        <h4 className={classnames('section__text')}>
+        <h4 style={{paddingLeft: '1em'}} className={classnames('section__text')}>
           <label style={{width: 0}} className={classnames("mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect")} htmlFor="checkbox-1">
             <input type="checkbox" id="checkbox-1" className={classnames("mdl-checkbox__input")} defaultChecked={repo.hookAdded} />
           </label>
