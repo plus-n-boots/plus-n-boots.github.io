@@ -1,4 +1,6 @@
 import React, { PropTypes } from 'react'
+import classnames from 'classnames'
+import {componentHandler} from 'exports?componentHandler&MaterialRipple!material-design-lite/material.js'
 
 export default class {
   static displayName = 'Repo'
@@ -8,12 +10,24 @@ export default class {
     repo: PropTypes.object.isRequired
   }
 
+  componentDidMount () {
+    componentHandler.upgradeDom()
+  }
+
   render () {
     const { actions, repo } = this.props
     const hookAction = repo.hookAdded ? actions.removeHook : actions.addHook
     const actionMsg = repo.hookAdded ? `Remove` : `Add`
+
     return (
-      <li>{repo.name} <a onClick={() => hookAction(repo)}>{actionMsg}</a></li>
+      <section onClick={() => hookAction(repo)}>
+        <h4 className={classnames('section__text')}>
+          <label style={{width: 0}} className={classnames("mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect")} htmlFor="checkbox-1">
+            <input type="checkbox" id="checkbox-1" className={classnames("mdl-checkbox__input")} defaultChecked={repo.hookAdded} />
+          </label>
+          {repo.name}
+        </h4>
+      </section>
     )
   }
 }

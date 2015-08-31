@@ -13,11 +13,9 @@ export default class {
     const { actions, repos } = this.props
     return (
       <section>
-        <ul>
-          {repos.map(repo =>
-            <Repo key={repo.name} repo={repo} actions={actions} />
-          )}
-        </ul>
+        {repos.map(repo =>
+          <Repo key={repo.id} repo={repo} actions={actions} />
+        )}
       </section>
     )
   }
