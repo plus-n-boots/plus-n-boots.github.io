@@ -20,10 +20,10 @@ export default class {
     const actionMsg = repo.hookAdded ? `Remove` : `Add`
 
     return (
-      <section onClick={() => hookAction(repo)}>
+      <section>
         <h4 style={{paddingLeft: '1em'}} className={classnames('section__text')}>
-          <label style={{width: 0}} className={classnames("mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect")} htmlFor="checkbox-1">
-            <input type="checkbox" id="checkbox-1" className={classnames("mdl-checkbox__input")} defaultChecked={repo.hookAdded} />
+          <label style={{width: 0}} className={classnames("mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect")} htmlFor={repo.name}>
+            <input type="checkbox" id={repo.name} className={classnames("mdl-checkbox__input")} defaultChecked={repo.hookAdded} onChange={() => hookAction(repo)} />
           </label>
           {repo.name}
         </h4>
