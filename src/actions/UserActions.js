@@ -1,5 +1,6 @@
 import PouchDB from 'pouchdb'
 import _ from 'lodash'
+import dedent from 'dedent'
 import * as types from '../constants/action-types'
 import * as github from '../constants/github'
 import { asyncawaitFetch as fetch } from '../lib/asyncawait-fetch/index'
@@ -25,7 +26,8 @@ async function getCode () {
 }
 
 async function getAuth (code) {
-  const authRequest = `${github.AUTH_URI}${code}`
+  const authRequest = dedent`${github.AUTH_URI}
+                       ${code}`
   return await fetch(authRequest)
 }
 
@@ -45,7 +47,9 @@ async function orgInit (orgname) {
 
 async function getUserDetails (auth) {
   accessToken = auth.token
-  const response = await fetch(`${github.GITHUB_API}user?access_token=${accessToken}`)
+  const response = await fetch(dedent`${github.GITHUB_API}
+                                user
+                                ?access_token=${accessToken}`)
   // set username globally
   username = response.login
   const user = {
@@ -57,7 +61,10 @@ async function getUserDetails (auth) {
 }
 
 async function getOrgs (auth) {
-  const orgs = await fetch(`${github.GITHUB_API}user/orgs?access_token=${auth.token}`)
+  const orgs = await fetch(dedent`${github.GITHUB_API}
+                            user
+                            /orgs
+                            ?access_token=${auth.token}`)
   const orgNames = orgs.map(org => org.login)
   // add username as top level org, for users own repos
   orgNames.unshift(username)
@@ -98,7 +105,12 @@ async function checkRepos (repos) {
 }
 
 async function getRepos () {
-  const data = await fetch(`${github.GITHUB_API}user/repos?per_page=100&affiliation=owner&access_token=${accessToken}`)
+  const data = await fetch(dedent`${github.GITHUB_API}
+                            user
+                            /repos
+                            ?per_page=100
+                            &affiliation=owner
+                            &access_token=${accessToken}`)
   const repos = await checkRepos(data)
   return repos.filter(repo => {
     return !repo.fork && repo.has_issues
@@ -115,7 +127,12 @@ async function requestHook (repoName) {
       'content_type': 'json'
     }
   }
-  const data = await fetch(`${github.GITHUB_API}repos/${username}/${repoName}/hooks?access_token=${accessToken}`, {
+  const data = await fetch(dedent`${github.GITHUB_API}
+                            repos
+                            /${username}
+                            /${repoName}
+                            /hooks
+                            ?access_token=${accessToken}`, {
     method: 'post',
     headers: {
       'Accept': 'application/json',
@@ -154,7 +171,13 @@ async function processLogin () {
 }
 
 async function requestCollab (repoName, type) {
-  const data = await fetch(`${github.GITHUB_API}repos/${username}/${repoName}/collaborators/plus-n-boots-official?access_token=${accessToken}`, {
+  const data = await fetch(dedent`${github.GITHUB_API}
+                            repos
+                            /${username}
+                            /${repoName}
+                            /collaborators
+                            /plus-n-boots-official
+                            ?access_token=${accessToken}`, {
     method: type === 'add' ? 'put' : 'delete',
     headers: {
       'Content-Length': 0
@@ -183,7 +206,13 @@ async function requestPersist (repoName, hookId, type) {
 }
 
 async function deleteHook (repoName, hookId) {
-  await fetch(`${github.GITHUB_API}repos/${username}/${repoName}/hooks/${hookId}?access_token=${accessToken}`, {
+  await fetch(dedent`${github.GITHUB_API}
+               repos
+               /${username}
+               /${repoName}
+               /hooks
+               /${hookId}
+               ?access_token=${accessToken}`, {
     method: 'delete',
     headers: {
       'Accept': 'application/json',
@@ -223,18 +252,22 @@ export function login () {
 }
 
 export function addHook (repo) {
-  processHook(repo, 'add')
-  return {
-    type: types.HOOK_AMENDED,
-    repo
+  return dispatch => {
+    processHook(repo, 'add').then(
+      data => {
+        dispatch(data)
+      }
+    )
   }
 }
 
 export function removeHook (repo) {
-  processHook(repo, 'remove')
-  return {
-    type: types.HOOK_AMENDED,
-    repo
+  return dispatch => {
+    processHook(repo, 'remove').then(
+      data => {
+        dispatch(data)
+      }
+    )
   }
 }
 
