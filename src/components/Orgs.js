@@ -15,7 +15,7 @@ export default class {
     return (
       <section>
         {orgs.map(org =>
-          <section style={{margin: '2em 10%'}} className={classnames('section--center mdl-grid mdl-grid--no-spacing mdl-shadow--4dp')}>
+          <section style={{margin: '3em 10%'}} className={classnames('section--center mdl-grid mdl-grid--no-spacing mdl-shadow--4dp')}>
           <div style={{padding: '1em'}} className={classnames('mdl-card mdl-cell mdl-cell--12-col')}>
             <div style={{marginLeft: '1em'}} className={classnames('mdl-card__supporting-text mdl-grid mdl-grid--no-spacing')}>
               <h4 className={classnames('mdl-cell mdl-cell--12-col')}>{org.name}</h4>
