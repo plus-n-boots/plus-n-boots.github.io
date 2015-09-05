@@ -46,8 +46,13 @@ export default class {
           </header>
           <main style={{'backgroundColor': '#fafafa'}} className={classnames('mdl-layout__content')}>
             <div className={classnames('mdl-layout__tab-panel is-active')} id="overview">
+              {!username && !user.isFetching &&
+                <div style={{width: '80%', margin: '2em 10%'}} className={classnames("mdl-typography--display-1-color-contrast")}>
+                  Homepage content goes here
+                </div>
+              }
               {user.isFetching &&
-                <div style={{width: '100%', margin: '2em 0', padding: '0 1em'}} id="p2" className={classnames('mdl-progress mdl-js-progress mdl-progress__indeterminate')}></div>
+                <div style={{width: '80%', margin: '2em 10%'}} id="p2" className={classnames('mdl-progress mdl-js-progress mdl-progress__indeterminate')}></div>
               }
               <Orgs orgs={orgs} actions={actions} />
             </div>
