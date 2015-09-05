@@ -19,8 +19,8 @@ export default class {
           <div style={{padding: '1em'}} className={classnames('mdl-card mdl-cell mdl-cell--12-col')}>
             <div style={{marginLeft: '1em'}} className={classnames('mdl-card__supporting-text mdl-grid mdl-grid--no-spacing')}>
               <h4 className={classnames('mdl-cell mdl-cell--12-col')}>{org.name}</h4>
-              <Repos key={org.name} repos={org.repos} actions={actions} />
             </div>
+            <Repos key={org.name} repos={org.repos} actions={actions} />
           </div>
           </section>
         )}
