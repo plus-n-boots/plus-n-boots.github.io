@@ -241,6 +241,12 @@ export function checkCache () {
   }
 }
 
+export function initiateLogin() {
+  return {
+    type: types.INITIATE_LOGIN
+  }
+}
+
 export function login () {
   return dispatch => {
     processLogin().then(
