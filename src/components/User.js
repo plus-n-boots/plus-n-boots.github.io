@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react'
 import classnames from 'classnames'
 import Orgs from './Orgs'
+import {componentHandler} from 'exports?componentHandler&MaterialRipple!material-design-lite/material.js'
 
 export default class {
   static displayName = 'User'
@@ -10,12 +11,25 @@ export default class {
     user: PropTypes.object
   }
 
+  runLogin () {
+    !this.props.user.details.login ? this.props.actions.login() : this.props.actions.logout()
+    !this.props.user.details.login ? this.props.actions.initiateLogin() : null
+  }
+
+  componentDidMount () {
+    componentHandler.upgradeDom()
+  }
+
+  componentDidUpdate () {
+    componentHandler.upgradeDom()
+  }
+
   render () {
     const { actions, user } = this.props
     const username = user.details ? user.details.login : ``
     const orgs = user ? user.orgs : []
     const loggedInMsg = username ? `Log Out` : `Login with GitHub`
-    const loginAction = username ? actions.logout : actions.login
+
     return (
       <div className={classnames('mdl-demo mdl-color--grey-100 mdl-color-text--grey-700 mdl-base')}>
         <div className={classnames('mdl-layout mdl-js-layout mdl-layout--fixed-header')}>
@@ -24,7 +38,7 @@ export default class {
               <span className={classnames('mdl-layout-title')}>plus-n-boots</span>
               <div className={classnames('mdl-layout-spacer')}></div>
               <nav className={classnames('mdl-navigation')}>
-                <button onClick={loginAction} href="#" className={classnames('mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent')}>
+                <button onClick={this.runLogin.bind(this)} href="#" className={classnames('mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent')}>
                   {loggedInMsg}
                 </button>
               </nav>
@@ -32,6 +46,9 @@ export default class {
           </header>
           <main style={{'backgroundColor': '#fafafa'}} className={classnames('mdl-layout__content')}>
             <div className={classnames('mdl-layout__tab-panel is-active')} id="overview">
+              {user.isFetching &&
+                <div style={{width: '100%', margin: '2em 0', padding: '0 1em'}} id="p2" className={classnames('mdl-progress mdl-js-progress mdl-progress__indeterminate')}></div>
+              }
               <Orgs orgs={orgs} actions={actions} />
             </div>
             <footer className={classnames('mdl-mega-footer')}>
@@ -46,4 +63,5 @@ export default class {
       </div>
     )
   }
+
 }
