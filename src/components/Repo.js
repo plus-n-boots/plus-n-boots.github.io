@@ -21,12 +21,12 @@ export default class {
 
     return (
       <section>
-        <h4 style={{paddingLeft: '1em'}} className={classnames('section__text')}>
+        <h5 style={{paddingLeft: '1em'}} className={classnames('section__text')}>
           <label style={{width: 0}} className={classnames("mdl-checkbox mdl-js-checkbox mdl-js-ripple-effect")} htmlFor={repo.name}>
             <input type="checkbox" id={repo.name} className={classnames("mdl-checkbox__input")} defaultChecked={repo.hookAdded} onChange={() => hookAction(repo)} />
           </label>
           {repo.name}
-        </h4>
+        </h5>
       </section>
     )
   }
