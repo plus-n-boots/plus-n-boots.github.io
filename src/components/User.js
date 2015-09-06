@@ -35,7 +35,7 @@ export default class {
         <div className={classnames('mdl-layout mdl-js-layout mdl-layout--fixed-header')}>
           <header className={classnames('mdl-layout__header')}>
             <div style={{'paddingLeft': '16px'}} className={classnames('mdl-layout__header-row')}>
-              <span className={classnames('mdl-layout-title')}>plus-n-boots</span>
+              <span className={classnames('mdl-layout-title')}>Tigris Bot</span>
               <div className={classnames('mdl-layout-spacer')}></div>
               <nav className={classnames('mdl-navigation')}>
                 <button onClick={this.runLogin.bind(this)} href="#" className={classnames('mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect mdl-button--accent')}>
@@ -47,7 +47,7 @@ export default class {
           <main style={{'backgroundColor': '#fafafa'}} className={classnames('mdl-layout__content')}>
             <div className={classnames('mdl-layout__tab-panel is-active')} id="overview">
               {!username && !user.isFetching &&
-                <div style={{width: '80%', margin: '2em 10%'}} className={classnames("mdl-typography--display-1-color-contrast")}>
+                <div style={{width: '80%', margin: '2em 10%'}} className={classnames("mdl-typography--display-2 mdl-typography--text-center")}>
                   Homepage content goes here
                 </div>
               }

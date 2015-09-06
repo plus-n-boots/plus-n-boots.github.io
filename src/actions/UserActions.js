@@ -8,7 +8,7 @@ import { asyncawaitFetch as fetch } from '../lib/asyncawait-fetch/index'
 // expose pouchdb on window for pouchdb chrome extension
 window.PouchDB = PouchDB
 
-const db = new PouchDB('plus-n-boots')
+const db = new PouchDB('tigris-bot')
 const remoteCouch = false
 
 let accessToken
@@ -176,7 +176,7 @@ async function requestCollab (repoName, type) {
                             /${username}
                             /${repoName}
                             /collaborators
-                            /plus-n-boots-official
+                            /tigris-bot-official
                             ?access_token=${accessToken}`, {
     method: type === 'add' ? 'put' : 'delete',
     headers: {

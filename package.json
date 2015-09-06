@@ -1,7 +1,7 @@
 {
-  "name": "plus-n-boots.github.io",
+  "name": "website",
   "version": "1.0.0",
-  "description": "plus-n-boots website",
+  "description": "tigris-bot website",
   "main": "index.html",
   "scripts": {
     "start": "node server.js",
@@ -10,17 +10,17 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/plus-n-boots/plus-n-boots.github.io.git"
+    "url": "https://github.com/tigris-bot/website.git"
   },
   "keywords": [
-    "plus-n-boots"
+    "tigris-bot"
   ],
   "author": "Chris Wheatley <chiswheatley87@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/plus-n-boots/plus-n-boots.github.io/issues"
+    "url": "https://github.com/tigris-bot/website/issues"
   },
-  "homepage": "https://github.com/plus-n-boots/plus-n-boots.github.io",
+  "homepage": "https://github.com/tigris-bot/website",
   "devDependencies": {
     "babel-core": "^5.4.7",
     "babel-eslint": "^3.1.9",
