@@ -2,14 +2,15 @@ import PouchDB from 'pouchdb'
 import _ from 'lodash'
 import dedent from 'dedent'
 import * as types from '../constants/action-types'
+import * as couch from '../constants/couchdb'
 import * as github from '../constants/github'
 import { asyncawaitFetch as fetch } from '../lib/asyncawait-fetch/index'
 
 // expose pouchdb on window for pouchdb chrome extension
 window.PouchDB = PouchDB
 
-const db = new PouchDB('tigris-bot')
-const remoteCouch = false
+const db = new PouchDB(couch.INSTANCE)
+const remoteCouch = couch.REMOTE
 
 let accessToken
 let username
