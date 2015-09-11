@@ -28,7 +28,7 @@ async function getCode () {
 
 async function getAuth (code) {
   const authRequest = dedent`${github.AUTH_URI}
-                       ${code}`
+                             ${code}`
   return await fetch(authRequest)
 }
 
@@ -49,8 +49,8 @@ async function orgInit (orgname) {
 async function getUserDetails (auth) {
   accessToken = auth.token
   const response = await fetch(dedent`${github.GITHUB_API}
-                                user
-                                ?access_token=${accessToken}`)
+                                      user
+                                      ?access_token=${accessToken}`)
   // set username globally
   username = response.login
   const user = {
@@ -63,9 +63,9 @@ async function getUserDetails (auth) {
 
 async function getOrgs (auth) {
   const orgs = await fetch(dedent`${github.GITHUB_API}
-                            user
-                            /orgs
-                            ?access_token=${auth.token}`)
+                                  user
+                                  /orgs
+                                  ?access_token=${auth.token}`)
   const orgNames = orgs.map(org => org.login)
   // add username as top level org, for users own repos
   orgNames.unshift(username)
@@ -107,11 +107,11 @@ async function checkRepos (repos) {
 
 async function getRepos () {
   const data = await fetch(dedent`${github.GITHUB_API}
-                            user
-                            /repos
-                            ?per_page=100
-                            &affiliation=owner
-                            &access_token=${accessToken}`)
+                                  user
+                                  /repos
+                                  ?per_page=100
+                                  &affiliation=owner
+                                  &access_token=${accessToken}`)
   const repos = await checkRepos(data)
   return repos.filter(repo => {
     return !repo.fork && repo.has_issues
@@ -129,11 +129,11 @@ async function requestHook (repoName) {
     }
   }
   const data = await fetch(dedent`${github.GITHUB_API}
-                            repos
-                            /${username}
-                            /${repoName}
-                            /hooks
-                            ?access_token=${accessToken}`, {
+                                  repos
+                                  /${username}
+                                  /${repoName}
+                                  /hooks
+                                  ?access_token=${accessToken}`, {
     method: 'post',
     headers: {
       'Accept': 'application/json',
@@ -173,12 +173,12 @@ async function processLogin () {
 
 async function requestCollab (repoName, type) {
   const data = await fetch(dedent`${github.GITHUB_API}
-                            repos
-                            /${username}
-                            /${repoName}
-                            /collaborators
-                            /tigris-bot-official
-                            ?access_token=${accessToken}`, {
+                                  repos
+                                  /${username}
+                                  /${repoName}
+                                  /collaborators
+                                  /tigris-bot-official
+                                  ?access_token=${accessToken}`, {
     method: type === 'add' ? 'put' : 'delete',
     headers: {
       'Content-Length': 0
@@ -208,12 +208,12 @@ async function requestPersist (repoName, hookId, type) {
 
 async function deleteHook (repoName, hookId) {
   await fetch(dedent`${github.GITHUB_API}
-               repos
-               /${username}
-               /${repoName}
-               /hooks
-               /${hookId}
-               ?access_token=${accessToken}`, {
+                     repos
+                     /${username}
+                     /${repoName}
+                     /hooks
+                     /${hookId}
+                     ?access_token=${accessToken}`, {
     method: 'delete',
     headers: {
       'Accept': 'application/json',
