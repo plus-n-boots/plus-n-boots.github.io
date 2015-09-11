@@ -1,4 +1,5 @@
 /node_modules/
 /build/
 /dist/
+src/constants/passwords.js
 *.log
