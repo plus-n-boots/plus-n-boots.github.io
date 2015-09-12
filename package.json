@@ -34,6 +34,7 @@
     "material-design-lite": "^1.0.2",
     "node-libs-browser": "^0.5.2",
     "pouchdb": "^3.6.0",
+    "pouchdb-authentication": "^0.4.1",
     "react": "^0.14.0-alpha3",
     "react-hot-loader": "^1.2.7",
     "react-redux": "^0.2.2",
