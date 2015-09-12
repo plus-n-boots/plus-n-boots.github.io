@@ -1,9 +1,11 @@
 import PouchDB from 'pouchdb'
+import PouchDBAuth from 'pouchdb-authentication'
 import _ from 'lodash'
 import dedent from 'dedent'
-import * as types from '../constants/action-types'
 import * as couch from '../constants/couchdb'
 import * as github from '../constants/github'
+import * as passwords from '../constants/passwords'
+import * as types from '../constants/action-types'
 import { asyncawaitFetch as fetch } from '../lib/asyncawait-fetch/index'
 
 // expose pouchdb on window for pouchdb chrome extension
@@ -11,6 +13,10 @@ window.PouchDB = PouchDB
 
 const db = new PouchDB(couch.INSTANCE)
 const remoteCouch = couch.REMOTE
+
+if (remoteCouch) {
+  PouchDB.plugin(PouchDBAuth)
+}
 
 let accessToken
 let username
@@ -249,6 +255,13 @@ export function initiateLogin() {
 }
 
 export function login () {
+  if (remoteCouch) {
+    db.login(couch.USERNAME, passwords.COUCH_DB).then(res => {
+      if (res && res.ok) {
+        console.info('logged in')
+      }
+    })
+  }
   return dispatch => {
     processLogin().then(
       data => {
@@ -279,6 +292,13 @@ export function removeHook (repo) {
 }
 
 export function logout () {
+  if (remoteCouch) {
+    db.logout((err, res) => {
+      if (res && res.ok) {
+        console.info('logged out')
+      }
+    })
+  }
   return {
     type: types.USER_LOGGED_OUT
   }
